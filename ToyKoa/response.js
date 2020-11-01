@@ -6,9 +6,9 @@ module.exports = {
         this._body = val
     },
     get status(){
-        return this.res.status
+        return this.res.statusCode
     },
     set status(val){
-        return this.res.status = val
+        return this.res.statusCode = val
     }
 }

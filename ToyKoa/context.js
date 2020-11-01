@@ -10,5 +10,11 @@ module.exports = {
     },
     set body(val){
         this.response.body = val
+    },
+    get status(){
+        return this.response.status
+    },
+    set status(val){
+        this.response.status = val
     }
 }
