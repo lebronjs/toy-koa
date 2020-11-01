@@ -18,13 +18,12 @@ class Router{
             let route = null
             const curPath = ctx.url
             const curMethod = ctx.method
-            ctx.pathMatch = true
             for (const item of stack) {
                 if(item.path === curPath && item.method === curMethod){
                     route = item.middleware
                     break
                 }else{
-                    ctx.pathMatch = false
+                    throw Error("404 not found")
                 }
             }
             if(typeof route === "function"){

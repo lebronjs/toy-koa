@@ -10,18 +10,32 @@ class ToyKoa{
     }
 
     listen(...args){
-        const server = http.createServer(async (req,res)=>{
+        const server = http.createServer(async (req, res)=>{
             // 创建上下文
             const ctx = this.createContext(req, res)
             // 合成中间件
             const middlewaresFn = this.compose(this.middlewares) 
-            await middlewaresFn(ctx)
+            middlewaresFn(ctx)
+                .then(()=>{
+                    ctx.body && res.end(ctx.body)
+                })
+                .catch((err)=> {
+                    if (err.code === 'ENOENT') {
+                        ctx.status = 404;
+                    }
+                    else {
+                        ctx.status = 500;
+                    }
+                    let msg = err.message || 'Internal error';
+                    ctx.res.end(msg);
+                    // 触发error事件
+                    //this.emit('error', err);
+                })
             
-            //res.setHeader("Content-Type", "text/plain;charset=utf-8")
-            ctx.body && res.end(ctx.body)
         })
         server.listen(...args)
     }
+
     use(middleware){
         this.middlewares.push(middleware)
         return this
@@ -41,7 +55,7 @@ class ToyKoa{
     compose(middlewares){
         return function(ctx){
             return dispatch(0)
-            function dispatch (i){
+            async function dispatch (i){
                 let fn = middlewares[i]
                 if(!fn){
                     return Promise.resolve()
